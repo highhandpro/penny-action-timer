@@ -1,0 +1,16 @@
+{
+  "name": "Penny Action Timer",
+  "short_name": "Penny Timer",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "./pennyante-og.png",
+      "sizes": "300x300",
+      "type": "image/png"
+    }
+  ]
+}
