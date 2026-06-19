@@ -161,8 +161,8 @@
       bottom: max(12px, env(safe-area-inset-bottom));
       display: grid;
       grid-template-columns: auto auto;
-      gap: 8px;
-      padding: 10px;
+      gap: 10px;
+      padding: 12px;
       background: rgba(0, 0, 0, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.035);
       border-radius: 18px;
@@ -171,11 +171,11 @@
     }
 
     .add-btn {
-      min-height: 48px;
+      min-height: 60px;
       border: none;
-      border-radius: 16px;
-      padding: 0 14px;
-      font-size: 1.32rem;
+      border-radius: 18px;
+      padding: 0 18px;
+      font-size: 1.5rem;
       font-weight: 900;
       color: #1b0909;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
@@ -183,7 +183,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .add-btn:disabled {
@@ -193,11 +193,11 @@
     }
 
     .pause-btn {
-      min-height: 48px;
+      min-height: 60px;
       border: none;
-      border-radius: 16px;
-      padding: 0 16px;
-      font-size: 1.32rem;
+      border-radius: 18px;
+      padding: 0 18px;
+      font-size: 1.5rem;
       font-weight: 900;
       color: white;
       background: linear-gradient(180deg, #444, #202020);
@@ -425,7 +425,7 @@
         applyTimerColors();
         emergencyAdd.classList.toggle('visible', remaining <= 10 && !finished);
         pauseBtn.disabled = !running;
-        pauseBtn.textContent = paused ? 'Paused' : 'Pause';
+      pauseBtn.textContent = 'DEAL/PAUSE';
         add30Btn.disabled = finished;
         screen.classList.toggle('flash', finished);
       }
