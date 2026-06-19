@@ -234,6 +234,10 @@
       pointer-events: none;
     }
 
+    .countdown-sound {
+      display: none;
+    }
+
     @keyframes flash {
       from { background: radial-gradient(circle at top, #220606 0%, var(--bg) 60%); }
       to { background: radial-gradient(circle at top, #440707 0%, #120101 60%); }
@@ -243,6 +247,7 @@
 <body>
   <main class="screen" id="screen" aria-label="Penny Action Timer. Tap anywhere to restart the 30 second countdown.">
     <button class="tap-overlay" id="tapArea" aria-label="Tap anywhere to restart the Penny Action Timer countdown"></button>
+    <audio class="countdown-sound" id="countdownSound" preload="auto" src="./countdown-alert.mp3"></audio>
     <div class="mini-timer top-left" id="miniTimerTopLeft">30</div>
     <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
     <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
@@ -269,6 +274,7 @@
       const screen = document.getElementById('screen');
       const tapArea = document.getElementById('tapArea');
       const timerEl = document.getElementById('timer');
+      const countdownSound = document.getElementById('countdownSound');
       const miniTimers = [
         document.getElementById('miniTimerTopLeft'),
         document.getElementById('miniTimerTopRight'),
@@ -282,59 +288,17 @@
       let finished = false;
       let paused = false;
       let lastTick = performance.now();
-      let audioCtx = null;
       let lastSpokenSecond = null;
-      const spokenNumbers = {
-        10: 'ten',
-        9: 'nine',
-        8: 'eight',
-        7: 'seven',
-        6: 'six',
-        5: 'five',
-        4: 'four',
-        3: 'three',
-        2: 'two',
-        1: 'one',
-      };
 
       function formatTime(seconds) {
         return Math.max(0, Math.ceil(seconds)).toString();
       }
 
-      function ensureAudio() {
-        const Ctor = window.AudioContext || window.webkitAudioContext;
-        if (!Ctor) return null;
-        if (!audioCtx) audioCtx = new Ctor();
-        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-        return audioCtx;
-      }
-
-      function beep() {
-        const ctx = ensureAudio();
-        if (!ctx) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = 880;
-        gain.gain.value = 0.0001;
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        const start = ctx.currentTime;
-        gain.gain.exponentialRampToValueAtTime(0.22, start + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
-        osc.start(start);
-        osc.stop(start + 0.24);
-      }
-
-      function speakCountdown(second) {
-        const text = spokenNumbers[second];
-        if (!text || !('speechSynthesis' in window)) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.volume = 1;
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
+      function playCountdownSound() {
+        if (!countdownSound) return;
+        const clip = countdownSound.cloneNode(true);
+        clip.volume = 1;
+        clip.play().catch(() => {});
       }
 
       function applyTimerColors() {
@@ -374,10 +338,6 @@
         remaining = DURATION;
         lastTick = performance.now();
         lastSpokenSecond = null;
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-        }
-        ensureAudio();
         render();
       }
 
@@ -385,9 +345,6 @@
         if (!running) return;
         running = false;
         paused = true;
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-        }
         render();
       }
 
@@ -405,13 +362,13 @@
           applyTimerColors();
           if (currentSecond <= 10 && currentSecond > 0 && currentSecond !== lastSpokenSecond) {
             lastSpokenSecond = currentSecond;
-            speakCountdown(currentSecond);
+            playCountdownSound();
           }
           if (remaining === 0) {
             running = false;
             finished = true;
             lastSpokenSecond = null;
-            beep();
+            playCountdownSound();
             render();
           } else {
             timerEl.textContent = formatTime(remaining);
