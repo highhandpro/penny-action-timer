@@ -1,6 +1,6 @@
-# Penny Ante Action Timer
+# Penny Action Timer
 
-A simple dealer-facing penny ante action timer built as a static site for GitHub and Vercel.
+A simple dealer-facing penny action timer built as a static site for GitHub and Vercel.
 
 ## What’s included
 
