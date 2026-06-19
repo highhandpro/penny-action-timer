@@ -275,7 +275,7 @@
 <body>
   <main class="screen" id="screen" aria-label="Penny Action Timer. Tap anywhere to restart the 30 second countdown.">
     <button class="tap-overlay" id="tapArea" aria-label="Tap anywhere to restart the Penny Action Timer countdown"></button>
-    <audio class="countdown-sound" id="countdownSound" preload="auto" src="./countdown-alert.mp3"></audio>
+    <audio class="countdown-sound" id="countdownSound" preload="auto" playsinline webkit-playsinline src="./countdown-alert.mp3"></audio>
     <div class="mini-timer top-left" id="miniTimerTopLeft">30</div>
     <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
     <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
@@ -297,16 +297,16 @@
         <span>+30</span>
       </button>
     </div>
-    <audio class="countdown-sound" id="voice10" preload="auto" src="./10.mp3"></audio>
-    <audio class="countdown-sound" id="voice9" preload="auto" src="./9.mp3"></audio>
-    <audio class="countdown-sound" id="voice8" preload="auto" src="./8.mp3"></audio>
-    <audio class="countdown-sound" id="voice7" preload="auto" src="./7.mp3"></audio>
-    <audio class="countdown-sound" id="voice6" preload="auto" src="./6.mp3"></audio>
-    <audio class="countdown-sound" id="voice5" preload="auto" src="./5.mp3"></audio>
-    <audio class="countdown-sound" id="voice4" preload="auto" src="./4.mp3"></audio>
-    <audio class="countdown-sound" id="voice3" preload="auto" src="./3.mp3"></audio>
-    <audio class="countdown-sound" id="voice2" preload="auto" src="./2.mp3"></audio>
-    <audio class="countdown-sound" id="voice1" preload="auto" src="./1.mp3"></audio>
+    <audio class="countdown-sound" id="voice10" preload="auto" playsinline webkit-playsinline src="./10.mp3"></audio>
+    <audio class="countdown-sound" id="voice9" preload="auto" playsinline webkit-playsinline src="./9.mp3"></audio>
+    <audio class="countdown-sound" id="voice8" preload="auto" playsinline webkit-playsinline src="./8.mp3"></audio>
+    <audio class="countdown-sound" id="voice7" preload="auto" playsinline webkit-playsinline src="./7.mp3"></audio>
+    <audio class="countdown-sound" id="voice6" preload="auto" playsinline webkit-playsinline src="./6.mp3"></audio>
+    <audio class="countdown-sound" id="voice5" preload="auto" playsinline webkit-playsinline src="./5.mp3"></audio>
+    <audio class="countdown-sound" id="voice4" preload="auto" playsinline webkit-playsinline src="./4.mp3"></audio>
+    <audio class="countdown-sound" id="voice3" preload="auto" playsinline webkit-playsinline src="./3.mp3"></audio>
+    <audio class="countdown-sound" id="voice2" preload="auto" playsinline webkit-playsinline src="./2.mp3"></audio>
+    <audio class="countdown-sound" id="voice1" preload="auto" playsinline webkit-playsinline src="./1.mp3"></audio>
   </main>
 
   <script>
@@ -343,6 +343,7 @@
       let lastTick = performance.now();
       let lastSpokenSecond = null;
       let wakeLock = null;
+      let audioUnlocked = false;
 
       function formatTime(seconds) {
         return Math.max(0, Math.ceil(seconds)).toString();
@@ -359,6 +360,25 @@
         if (!clip) return;
         clip.currentTime = 0;
         clip.play().catch(() => {});
+      }
+
+      async function unlockAudio() {
+        if (audioUnlocked) return;
+        const clips = [countdownSound, ...Object.values(voiceClips)].filter(Boolean);
+        for (const clip of clips) {
+          try {
+            clip.muted = true;
+            clip.currentTime = 0;
+            await clip.play();
+            clip.pause();
+            clip.currentTime = 0;
+          } catch {
+            // Ignore unlock failures and keep trying other clips.
+          } finally {
+            clip.muted = false;
+          }
+        }
+        audioUnlocked = true;
       }
 
       async function requestWakeLock() {
@@ -416,6 +436,7 @@
         remaining = DURATION;
         lastTick = performance.now();
         lastSpokenSecond = null;
+        await unlockAudio();
         await requestWakeLock();
         render();
       }
