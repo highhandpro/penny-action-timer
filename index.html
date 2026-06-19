@@ -152,49 +152,14 @@
         0 0 42px var(--timer-glow, rgba(15, 111, 42, 0.25));
     }
 
-    .mini-timer {
-      position: fixed;
-      font-family: "DSEG7", "Courier New", monospace;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-      font-size: clamp(1.8rem, 4vw, 4rem);
-      color: var(--timer-color, var(--timer-green));
-      text-shadow:
-        0 0 8px var(--timer-glow, rgba(15, 111, 42, 0.42)),
-        0 0 18px var(--timer-glow, rgba(15, 111, 42, 0.18));
-      opacity: 0.82;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .mini-timer.top-left {
-      top: 34px;
-      left: 32px;
-      transform: rotate(32deg);
-    }
-
-    .mini-timer.top-right {
-      top: 34px;
-      right: 34px;
-      transform: rotate(-28deg);
-    }
-
-    .mini-timer.bottom-right {
-      right: 28px;
-      bottom: 132px;
-      transform: rotate(180deg);
-      font-size: clamp(1.4rem, 3vw, 2.8rem);
-      opacity: 0.9;
-    }
-
     .controls {
       position: fixed;
       right: max(12px, env(safe-area-inset-right));
       bottom: max(12px, env(safe-area-inset-bottom));
       display: grid;
       grid-template-columns: auto auto;
-      gap: 4px;
-      padding: 6px;
+      gap: 8px;
+      padding: 10px;
       background: rgba(0, 0, 0, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.035);
       border-radius: 18px;
@@ -203,19 +168,19 @@
     }
 
     .add-btn {
-      min-height: 24px;
+      min-height: 48px;
       border: none;
-      border-radius: 9px;
-      padding: 0 6px;
-      font-size: 0.66rem;
+      border-radius: 16px;
+      padding: 0 14px;
+      font-size: 1.32rem;
       font-weight: 900;
       color: #1b0909;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
-      box-shadow: 0 12px 30px rgba(255, 138, 31, 0.25);
+      box-shadow: 0 16px 36px rgba(255, 138, 31, 0.28);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 10px;
     }
 
     .add-btn:disabled {
@@ -225,11 +190,11 @@
     }
 
     .pause-btn {
-      min-height: 24px;
+      min-height: 48px;
       border: none;
-      border-radius: 9px;
-      padding: 0 7px;
-      font-size: 0.66rem;
+      border-radius: 16px;
+      padding: 0 16px;
+      font-size: 1.32rem;
       font-weight: 900;
       color: white;
       background: linear-gradient(180deg, #444, #202020);
@@ -243,8 +208,8 @@
     }
 
     .add-icon {
-      width: 12px;
-      height: 12px;
+      width: 24px;
+      height: 24px;
       display: block;
       object-fit: contain;
       flex: 0 0 auto;
@@ -315,9 +280,6 @@
   <main class="screen" id="screen" aria-label="Penny Action Timer. Tap anywhere to restart the 30 second countdown.">
     <button class="tap-overlay" id="tapArea" aria-label="Tap anywhere to restart the Penny Action Timer countdown"></button>
     <audio class="countdown-sound" id="countdownSound" preload="auto" playsinline webkit-playsinline src="./countdown-alert.mp3"></audio>
-    <div class="mini-timer top-left" id="miniTimerTopLeft">30</div>
-    <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
-    <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
     <div class="hint">Tap to start/reset</div>
     <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
     <div class="content">
@@ -369,11 +331,6 @@
         2: document.getElementById('voice2'),
         1: document.getElementById('voice1'),
       };
-      const miniTimers = [
-        document.getElementById('miniTimerTopLeft'),
-        document.getElementById('miniTimerTopRight'),
-        document.getElementById('miniTimerBottomRight'),
-      ];
       const pauseBtn = document.getElementById('pauseBtn');
       const add30Btn = document.getElementById('add30');
 
@@ -456,18 +413,11 @@
         const warningMode = remaining <= 10 && !finished;
         timerEl.style.setProperty('--timer-color', warningMode ? 'var(--timer-red)' : 'var(--timer-green)');
         timerEl.style.setProperty('--timer-glow', warningMode ? 'rgba(255, 31, 31, 0.55)' : 'rgba(15, 111, 42, 0.52)');
-        miniTimers.forEach((mini) => {
-          mini.style.setProperty('--timer-color', warningMode ? 'var(--timer-red)' : 'var(--timer-green)');
-          mini.style.setProperty('--timer-glow', warningMode ? 'rgba(255, 31, 31, 0.45)' : 'rgba(15, 111, 42, 0.4)');
-        });
       }
 
       function render() {
         const displayValue = formatTime(remaining);
         timerEl.textContent = displayValue;
-        miniTimers.forEach((mini) => {
-          mini.textContent = displayValue;
-        });
         applyTimerColors();
         emergencyAdd.classList.toggle('visible', remaining <= 10 && !finished);
         pauseBtn.disabled = !running;
@@ -516,9 +466,6 @@
           const currentSecond = Math.ceil(remaining);
           const displayValue = formatTime(remaining);
           timerEl.textContent = displayValue;
-          miniTimers.forEach((mini) => {
-            mini.textContent = displayValue;
-          });
           applyTimerColors();
           if (currentSecond <= 10 && currentSecond > 0 && currentSecond !== lastSpokenSecond) {
             lastSpokenSecond = currentSecond;
