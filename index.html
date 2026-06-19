@@ -280,6 +280,7 @@
   <main class="screen" id="screen" aria-label="Penny Action Timer. Tap anywhere to restart the 30 second countdown.">
     <button class="tap-overlay" id="tapArea" aria-label="Tap anywhere to restart the Penny Action Timer countdown"></button>
     <audio class="countdown-sound" id="countdownSound" preload="auto" playsinline webkit-playsinline src="./countdown-alert.mp3"></audio>
+    <audio class="countdown-sound" id="finalAlarmSound" preload="auto" playsinline webkit-playsinline src="./handTimer.wav"></audio>
     <div class="hint">Tap to start/reset</div>
     <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
     <div class="content">
@@ -318,6 +319,7 @@
       const tapArea = document.getElementById('tapArea');
       const timerEl = document.getElementById('timer');
       const countdownSound = document.getElementById('countdownSound');
+      const finalAlarmSound = document.getElementById('finalAlarmSound');
       const emergencyAdd = document.getElementById('emergencyAdd');
       const voiceClips = {
         10: document.getElementById('voice10'),
@@ -361,20 +363,14 @@
       }
 
       function playFinalAlarm() {
-        if (!countdownSound) return;
-        const beeps = [0, 260, 520];
-        beeps.forEach((delay) => {
-          window.setTimeout(() => {
-            const clip = countdownSound.cloneNode(true);
-            clip.volume = 1;
-            clip.play().catch(() => {});
-          }, delay);
-        });
+        if (!finalAlarmSound) return;
+        finalAlarmSound.currentTime = 0;
+        finalAlarmSound.play().catch(() => {});
       }
 
       async function unlockAudio() {
         if (audioUnlocked) return;
-        const clips = [countdownSound, ...Object.values(voiceClips)].filter(Boolean);
+        const clips = [countdownSound, finalAlarmSound, ...Object.values(voiceClips)].filter(Boolean);
         for (const clip of clips) {
           try {
             clip.muted = true;
