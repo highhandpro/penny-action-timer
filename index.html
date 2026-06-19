@@ -367,8 +367,13 @@
 
       function playFinalAlarm() {
         if (!finalAlarmSound) return;
-        finalAlarmSound.currentTime = 0;
-        finalAlarmSound.play().catch(() => {});
+        [0, 420].forEach((delay) => {
+          window.setTimeout(() => {
+            const clip = finalAlarmSound.cloneNode(true);
+            clip.volume = 1;
+            clip.play().catch(() => {});
+          }, delay);
+        });
       }
 
       async function unlockAudio() {
