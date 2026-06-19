@@ -106,29 +106,37 @@
     }
 
     .emergency-add {
-      position: absolute;
-      top: 32%;
+      position: fixed;
+      top: max(72px, calc(env(safe-area-inset-top) + 64px));
       left: 50%;
       transform: translateX(-50%);
-      display: none;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 14px;
+      gap: 10px;
+      min-width: min(62vw, 220px);
+      min-height: 56px;
+      padding: 0 18px;
       border: none;
-      border-radius: 14px;
+      border-radius: 18px;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
       color: #1b0909;
       font-weight: 900;
-      font-size: 1rem;
-      box-shadow: 0 14px 36px rgba(255, 138, 31, 0.35);
-      z-index: 4;
+      font-size: 1.2rem;
+      box-shadow: 0 16px 40px rgba(255, 138, 31, 0.44);
+      z-index: 8;
       pointer-events: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform-origin: center center;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
     }
 
     .emergency-add.visible {
-      display: inline-flex;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+      animation: emergency-pulse 1s ease-in-out infinite;
     }
 
     .timer {
@@ -296,6 +304,11 @@
       from { background: radial-gradient(circle at top, #220606 0%, var(--bg) 60%); }
       to { background: radial-gradient(circle at top, #440707 0%, #120101 60%); }
     }
+
+    @keyframes emergency-pulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.12); }
+    }
   </style>
 </head>
 <body>
@@ -306,9 +319,9 @@
     <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
     <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
     <div class="hint">Tap to start/reset</div>
+    <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
     <div class="content">
       <div class="stage">
-        <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
         <div class="timer-card">
           <div class="timer-wrap">
             <div class="timer" id="timer">30</div>
