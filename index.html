@@ -107,7 +107,7 @@
 
     .emergency-add {
       position: absolute;
-      top: clamp(-8px, 2vh, 18px);
+      top: 32%;
       left: 50%;
       transform: translateX(-50%);
       display: none;
@@ -306,16 +306,16 @@
     <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
     <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
     <div class="hint">Tap to start/reset</div>
-      <div class="content">
-        <div class="stage">
-          <div class="timer-card">
-            <div class="timer-wrap">
-              <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
-              <div class="timer" id="timer">30</div>
-            </div>
+    <div class="content">
+      <div class="stage">
+        <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
+        <div class="timer-card">
+          <div class="timer-wrap">
+            <div class="timer" id="timer">30</div>
           </div>
         </div>
       </div>
+    </div>
 
     <div class="controls">
       <button class="pause-btn" id="pauseBtn" type="button">Pause</button>
