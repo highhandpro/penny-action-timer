@@ -105,6 +105,32 @@
       padding: clamp(20px, 5vw, 56px) clamp(18px, 4vw, 40px) clamp(120px, 16vh, 180px);
     }
 
+    .emergency-add {
+      position: absolute;
+      top: clamp(-8px, 2vh, 18px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
+      color: #1b0909;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 14px 36px rgba(255, 138, 31, 0.35);
+      z-index: 4;
+      pointer-events: auto;
+    }
+
+    .emergency-add.visible {
+      display: inline-flex;
+    }
+
     .timer {
       font-size: min(52vw, 60vh);
       line-height: 0.9;
@@ -280,15 +306,16 @@
     <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
     <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
     <div class="hint">Tap to start/reset</div>
-    <div class="content">
-      <div class="stage">
-        <div class="timer-card">
-          <div class="timer-wrap">
-            <div class="timer" id="timer">30</div>
+      <div class="content">
+        <div class="stage">
+          <div class="timer-card">
+            <div class="timer-wrap">
+              <button class="emergency-add" id="emergencyAdd" type="button">+30</button>
+              <div class="timer" id="timer">30</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
     <div class="controls">
       <button class="pause-btn" id="pauseBtn" type="button">Pause</button>
@@ -316,6 +343,7 @@
       const tapArea = document.getElementById('tapArea');
       const timerEl = document.getElementById('timer');
       const countdownSound = document.getElementById('countdownSound');
+      const emergencyAdd = document.getElementById('emergencyAdd');
       const voiceClips = {
         10: document.getElementById('voice10'),
         9: document.getElementById('voice9'),
@@ -428,6 +456,7 @@
           mini.textContent = displayValue;
         });
         applyTimerColors();
+        emergencyAdd.classList.toggle('visible', remaining <= 10 && !finished);
         pauseBtn.disabled = !running;
         pauseBtn.textContent = paused ? 'Paused' : 'Pause';
         add30Btn.disabled = finished;
@@ -439,6 +468,11 @@
         remaining += 30;
         lastSpokenSecond = null;
         render();
+      }
+
+      function addThirtyEmergency(event) {
+        if (event) event.stopPropagation();
+        addThirty();
       }
 
       async function restart() {
@@ -493,6 +527,7 @@
 
       tapArea.addEventListener('click', restart);
       screen.addEventListener('click', restart);
+      emergencyAdd.addEventListener('click', addThirtyEmergency);
       pauseBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         pauseTimer();
