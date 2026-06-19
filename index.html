@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Penny Action Timer" />
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./pennyante-og.png" />
+  <link rel="apple-touch-icon" href="./action-icon.png" />
   <title>30 Second Penny Action Timer</title>
   <style>
     @font-face {
@@ -158,9 +158,9 @@
       right: max(12px, env(safe-area-inset-right));
       bottom: max(12px, env(safe-area-inset-bottom));
       display: grid;
-      grid-template-columns: 1fr 1.25fr;
-      gap: 8px;
-      padding: 10px;
+      grid-template-columns: auto auto;
+      gap: 6px;
+      padding: 8px;
       background: rgba(0, 0, 0, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.035);
       border-radius: 18px;
@@ -169,11 +169,11 @@
     }
 
     .add-btn {
-      min-height: 32px;
+      min-height: 28px;
       border: none;
-      border-radius: 11px;
-      padding: 0 10px;
-      font-size: clamp(12px, 2.4vw, 14px);
+      border-radius: 10px;
+      padding: 0 8px;
+      font-size: 0.72rem;
       font-weight: 900;
       color: #1b0909;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
@@ -187,11 +187,11 @@
     }
 
     .pause-btn {
-      min-height: 32px;
+      min-height: 28px;
       border: none;
-      border-radius: 11px;
-      padding: 0 12px;
-      font-size: clamp(12px, 2.4vw, 14px);
+      border-radius: 10px;
+      padding: 0 9px;
+      font-size: 0.72rem;
       font-weight: 900;
       color: white;
       background: linear-gradient(180deg, #444, #202020);
