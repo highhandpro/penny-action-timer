@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>30 Second Penny Ante Action Timer</title>
+  <style>
+    @font-face {
+      font-family: "DSEG7";
+      src: url("./DSEG7Classic-BoldItalic.ttf") format("truetype");
+      font-weight: 700;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #050505;
+      --timer-green: #0f6f2a;
+      --timer-red: #ff1f1f;
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.7);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top, #220606 0%, var(--bg) 60%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+        url("./pennyante-og.png") 72% 48% / clamp(460px, 115vmin, 1200px) no-repeat;
+      opacity: 0.24;
+      pointer-events: none;
+      z-index: 0;
+      filter: saturate(0.9) contrast(1.05);
+      transform: rotate(180deg) rotate(35deg) scale(1.18) translateX(10vw);
+      transform-origin: center center;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.32));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr;
+      padding: 20px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 1;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 100%;
+      overflow: hidden;
+    }
+
+    .timer-wrap {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      transform: rotate(180deg);
+      transform-origin: center center;
+      position: relative;
+      padding: clamp(20px, 5vw, 56px) clamp(18px, 4vw, 40px) clamp(120px, 16vh, 180px);
+    }
+
+    .timer {
+      font-size: min(52vw, 60vh);
+      line-height: 0.9;
+      font-weight: 900;
+      font-family: "DSEG7", "Courier New", monospace;
+      color: var(--timer-color, var(--timer-green));
+      letter-spacing: -0.1em;
+      font-variant-numeric: tabular-nums;
+      text-shadow:
+        0 0 16px var(--timer-glow, rgba(15, 111, 42, 0.52)),
+        0 0 42px var(--timer-glow, rgba(15, 111, 42, 0.25));
+    }
+
+    .mini-timer {
+      position: fixed;
+      font-family: "DSEG7", "Courier New", monospace;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(1.8rem, 4vw, 4rem);
+      color: var(--timer-color, var(--timer-green));
+      text-shadow:
+        0 0 8px var(--timer-glow, rgba(15, 111, 42, 0.42)),
+        0 0 18px var(--timer-glow, rgba(15, 111, 42, 0.18));
+      opacity: 0.82;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .mini-timer.top-left {
+      top: 34px;
+      left: 32px;
+      transform: rotate(32deg);
+    }
+
+    .mini-timer.top-right {
+      top: 34px;
+      right: 34px;
+      transform: rotate(-28deg);
+    }
+
+    .mini-timer.bottom-right {
+      right: 28px;
+      bottom: 132px;
+      transform: rotate(180deg);
+      font-size: clamp(1.4rem, 3vw, 2.8rem);
+      opacity: 0.9;
+    }
+
+    .controls {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 8px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.035);
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+      z-index: 2;
+    }
+
+    .add-btn {
+      min-height: 58px;
+      border: none;
+      border-radius: 15px;
+      font-size: clamp(15px, 3.4vw, 20px);
+      font-weight: 900;
+      color: #1b0909;
+      background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
+      box-shadow: 0 12px 30px rgba(255, 138, 31, 0.25);
+    }
+
+    .add-btn:disabled {
+      opacity: 0.35;
+      filter: grayscale(0.6);
+      box-shadow: none;
+    }
+
+    .pause-btn {
+      min-height: 58px;
+      border: none;
+      border-radius: 15px;
+      font-size: clamp(15px, 3.4vw, 20px);
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(180deg, #444, #202020);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .pause-btn:disabled {
+      opacity: 0.35;
+      filter: grayscale(0.8);
+      box-shadow: none;
+    }
+
+    .flash {
+      animation: flash 0.24s steps(1) infinite alternate;
+    }
+
+    .tap-overlay {
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      border: none;
+      padding: 0;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+    }
+
+    .timer-card {
+      width: min(100%, 1180px);
+      padding: clamp(8px, 2vw, 20px);
+      border-radius: 24px;
+      background: transparent;
+    }
+
+    .hint {
+      position: fixed;
+      left: 20px;
+      bottom: 24px;
+      max-width: min(72vw, 720px);
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255,255,255,0.84);
+      font-size: clamp(15px, 2vw, 20px);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    @keyframes flash {
+      from { background: radial-gradient(circle at top, #220606 0%, var(--bg) 60%); }
+      to { background: radial-gradient(circle at top, #440707 0%, #120101 60%); }
+    }
+  </style>
+</head>
+<body>
+  <main class="screen" id="screen" aria-label="Penny Ante timer. Tap anywhere to restart the 30 second countdown.">
+    <button class="tap-overlay" id="tapArea" aria-label="Tap anywhere to restart the Penny Ante countdown"></button>
+    <div class="mini-timer top-left" id="miniTimerTopLeft">30</div>
+    <div class="mini-timer top-right" id="miniTimerTopRight">30</div>
+    <div class="mini-timer bottom-right" id="miniTimerBottomRight">30</div>
+    <div class="hint">Tap anywhere to start or reset the Penny Ante countdown</div>
+    <div class="content">
+      <div class="stage">
+        <div class="timer-card">
+          <div class="timer-wrap">
+            <div class="timer" id="timer">30</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="pause-btn" id="pauseBtn" type="button">Pause</button>
+      <button class="add-btn" id="add30" type="button">+30 seconds</button>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const DURATION = 30;
+      const screen = document.getElementById('screen');
+      const tapArea = document.getElementById('tapArea');
+      const timerEl = document.getElementById('timer');
+      const miniTimers = [
+        document.getElementById('miniTimerTopLeft'),
+        document.getElementById('miniTimerTopRight'),
+        document.getElementById('miniTimerBottomRight'),
+      ];
+      const pauseBtn = document.getElementById('pauseBtn');
+      const add30Btn = document.getElementById('add30');
+
+      let remaining = DURATION;
+      let running = false;
+      let finished = false;
+      let paused = false;
+      let lastTick = performance.now();
+      let audioCtx = null;
+      let lastSpokenSecond = null;
+      const spokenNumbers = {
+        10: 'ten',
+        9: 'nine',
+        8: 'eight',
+        7: 'seven',
+        6: 'six',
+        5: 'five',
+        4: 'four',
+        3: 'three',
+        2: 'two',
+        1: 'one',
+      };
+
+      function formatTime(seconds) {
+        return Math.max(0, Math.ceil(seconds)).toString();
+      }
+
+      function ensureAudio() {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return null;
+        if (!audioCtx) audioCtx = new Ctor();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        return audioCtx;
+      }
+
+      function beep() {
+        const ctx = ensureAudio();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const start = ctx.currentTime;
+        gain.gain.exponentialRampToValueAtTime(0.22, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
+        osc.start(start);
+        osc.stop(start + 0.24);
+      }
+
+      function speakCountdown(second) {
+        const text = spokenNumbers[second];
+        if (!text || !('speechSynthesis' in window)) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function applyTimerColors() {
+        const warningMode = remaining <= 10 && !finished;
+        timerEl.style.setProperty('--timer-color', warningMode ? 'var(--timer-red)' : 'var(--timer-green)');
+        timerEl.style.setProperty('--timer-glow', warningMode ? 'rgba(255, 31, 31, 0.55)' : 'rgba(15, 111, 42, 0.52)');
+        miniTimers.forEach((mini) => {
+          mini.style.setProperty('--timer-color', warningMode ? 'var(--timer-red)' : 'var(--timer-green)');
+          mini.style.setProperty('--timer-glow', warningMode ? 'rgba(255, 31, 31, 0.45)' : 'rgba(15, 111, 42, 0.4)');
+        });
+      }
+
+      function render() {
+        const displayValue = formatTime(remaining);
+        timerEl.textContent = displayValue;
+        miniTimers.forEach((mini) => {
+          mini.textContent = displayValue;
+        });
+        applyTimerColors();
+        pauseBtn.disabled = !running;
+        pauseBtn.textContent = paused ? 'Paused' : 'Pause';
+        add30Btn.disabled = finished;
+        screen.classList.toggle('flash', finished);
+      }
+
+      function addThirty() {
+        if (finished) return;
+        remaining += 30;
+        lastSpokenSecond = null;
+        render();
+      }
+
+      function restart() {
+        running = true;
+        finished = false;
+        paused = false;
+        remaining = DURATION;
+        lastTick = performance.now();
+        lastSpokenSecond = null;
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        ensureAudio();
+        render();
+      }
+
+      function pauseTimer() {
+        if (!running) return;
+        running = false;
+        paused = true;
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        render();
+      }
+
+      function tick(time) {
+        if (running) {
+          const delta = (time - lastTick) / 1000;
+          remaining = Math.max(0, remaining - delta);
+          lastTick = time;
+          const currentSecond = Math.ceil(remaining);
+          const displayValue = formatTime(remaining);
+          timerEl.textContent = displayValue;
+          miniTimers.forEach((mini) => {
+            mini.textContent = displayValue;
+          });
+          applyTimerColors();
+          if (currentSecond <= 10 && currentSecond > 0 && currentSecond !== lastSpokenSecond) {
+            lastSpokenSecond = currentSecond;
+            speakCountdown(currentSecond);
+          }
+          if (remaining === 0) {
+            running = false;
+            finished = true;
+            lastSpokenSecond = null;
+            beep();
+            render();
+          } else {
+            timerEl.textContent = formatTime(remaining);
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      tapArea.addEventListener('click', restart);
+      screen.addEventListener('click', restart);
+      pauseBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        pauseTimer();
+      });
+      add30Btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        addThirty();
+      });
+      window.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' || event.key === 'Enter') {
+          event.preventDefault();
+          restart();
+        } else if (event.key.toLowerCase() === 'p') {
+          pauseTimer();
+        } else if (event.key === '+') {
+          addThirty();
+        }
+      });
+
+      render();
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>
