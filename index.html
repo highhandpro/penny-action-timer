@@ -159,8 +159,8 @@
       bottom: max(12px, env(safe-area-inset-bottom));
       display: grid;
       grid-template-columns: auto auto;
-      gap: 6px;
-      padding: 8px;
+      gap: 4px;
+      padding: 6px;
       background: rgba(0, 0, 0, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.035);
       border-radius: 18px;
@@ -169,11 +169,11 @@
     }
 
     .add-btn {
-      min-height: 28px;
+      min-height: 24px;
       border: none;
-      border-radius: 10px;
-      padding: 0 8px;
-      font-size: 0.72rem;
+      border-radius: 9px;
+      padding: 0 6px;
+      font-size: 0.66rem;
       font-weight: 900;
       color: #1b0909;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
@@ -191,11 +191,11 @@
     }
 
     .pause-btn {
-      min-height: 28px;
+      min-height: 24px;
       border: none;
-      border-radius: 10px;
-      padding: 0 9px;
-      font-size: 0.72rem;
+      border-radius: 9px;
+      padding: 0 7px;
+      font-size: 0.66rem;
       font-weight: 900;
       color: white;
       background: linear-gradient(180deg, #444, #202020);
@@ -209,8 +209,8 @@
     }
 
     .add-icon {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       display: block;
       object-fit: contain;
       flex: 0 0 auto;
@@ -297,6 +297,16 @@
         <span>+30</span>
       </button>
     </div>
+    <audio class="countdown-sound" id="voice10" preload="auto" src="./10.mp3"></audio>
+    <audio class="countdown-sound" id="voice9" preload="auto" src="./9.mp3"></audio>
+    <audio class="countdown-sound" id="voice8" preload="auto" src="./8.mp3"></audio>
+    <audio class="countdown-sound" id="voice7" preload="auto" src="./7.mp3"></audio>
+    <audio class="countdown-sound" id="voice6" preload="auto" src="./6.mp3"></audio>
+    <audio class="countdown-sound" id="voice5" preload="auto" src="./5.mp3"></audio>
+    <audio class="countdown-sound" id="voice4" preload="auto" src="./4.mp3"></audio>
+    <audio class="countdown-sound" id="voice3" preload="auto" src="./3.mp3"></audio>
+    <audio class="countdown-sound" id="voice2" preload="auto" src="./2.mp3"></audio>
+    <audio class="countdown-sound" id="voice1" preload="auto" src="./1.mp3"></audio>
   </main>
 
   <script>
@@ -306,6 +316,18 @@
       const tapArea = document.getElementById('tapArea');
       const timerEl = document.getElementById('timer');
       const countdownSound = document.getElementById('countdownSound');
+      const voiceClips = {
+        10: document.getElementById('voice10'),
+        9: document.getElementById('voice9'),
+        8: document.getElementById('voice8'),
+        7: document.getElementById('voice7'),
+        6: document.getElementById('voice6'),
+        5: document.getElementById('voice5'),
+        4: document.getElementById('voice4'),
+        3: document.getElementById('voice3'),
+        2: document.getElementById('voice2'),
+        1: document.getElementById('voice1'),
+      };
       const miniTimers = [
         document.getElementById('miniTimerTopLeft'),
         document.getElementById('miniTimerTopRight'),
@@ -328,8 +350,14 @@
 
       function playCountdownSound() {
         if (!countdownSound) return;
-        const clip = countdownSound.cloneNode(true);
-        clip.volume = 1;
+        countdownSound.currentTime = 0;
+        countdownSound.play().catch(() => {});
+      }
+
+      function playVoiceCountdown(second) {
+        const clip = voiceClips[second];
+        if (!clip) return;
+        clip.currentTime = 0;
         clip.play().catch(() => {});
       }
 
@@ -414,7 +442,7 @@
           applyTimerColors();
           if (currentSecond <= 10 && currentSecond > 0 && currentSecond !== lastSpokenSecond) {
             lastSpokenSecond = currentSecond;
-            playCountdownSound();
+            playVoiceCountdown(currentSecond);
           }
           if (remaining === 0) {
             running = false;
