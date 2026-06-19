@@ -362,6 +362,18 @@
         clip.play().catch(() => {});
       }
 
+      function playFinalAlarm() {
+        if (!countdownSound) return;
+        const beeps = [0, 260, 520];
+        beeps.forEach((delay) => {
+          window.setTimeout(() => {
+            const clip = countdownSound.cloneNode(true);
+            clip.volume = 1;
+            clip.play().catch(() => {});
+          }, delay);
+        });
+      }
+
       async function unlockAudio() {
         if (audioUnlocked) return;
         const clips = [countdownSound, ...Object.values(voiceClips)].filter(Boolean);
@@ -470,7 +482,7 @@
             finished = true;
             lastSpokenSecond = null;
             releaseWakeLock();
-            playCountdownSound();
+            playFinalAlarm();
             render();
           } else {
             timerEl.textContent = formatTime(remaining);
