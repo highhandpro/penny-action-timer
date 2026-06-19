@@ -178,6 +178,10 @@
       color: #1b0909;
       background: linear-gradient(180deg, #ffcf5f, #ff8a1f);
       box-shadow: 0 12px 30px rgba(255, 138, 31, 0.25);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
     }
 
     .add-btn:disabled {
@@ -202,6 +206,14 @@
       opacity: 0.35;
       filter: grayscale(0.8);
       box-shadow: none;
+    }
+
+    .add-icon {
+      width: 14px;
+      height: 14px;
+      display: block;
+      object-fit: contain;
+      flex: 0 0 auto;
     }
 
     .flash {
@@ -280,7 +292,10 @@
 
     <div class="controls">
       <button class="pause-btn" id="pauseBtn" type="button">Pause</button>
-      <button class="add-btn" id="add30" type="button">+30 seconds</button>
+      <button class="add-btn" id="add30" type="button">
+        <img class="add-icon" src="./action-icon.png" alt="" aria-hidden="true" />
+        <span>+30</span>
+      </button>
     </div>
   </main>
 

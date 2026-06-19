@@ -8,8 +8,8 @@
   "theme_color": "#050505",
   "icons": [
     {
-      "src": "./pennyante-og.png",
-      "sizes": "300x300",
+      "src": "./action-icon.png",
+      "sizes": "1024x1024",
       "type": "image/png"
     }
   ]
